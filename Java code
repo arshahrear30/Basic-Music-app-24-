@@ -1,0 +1,65 @@
+//here a problem when i am pause the song and play again i is start from the start . i want start from where i pause the song . explain bangla how can i improve it
+//আপনার সমস্যাটি হলো যখন আপনি গানটি Pause করেন এবং পরে আবার Play করেন, তখন গানটি শুরু থেকেই বাজতে শুরু করে। আপনি চান গানটি যেখানে Pause হয়েছিল, সেখান থেকে পুনরায় শুরু হোক। 
+//এই কোডে সমস্যাটি আছে
+package com.timeforschool.applicationmyself;
+
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
+    ImageView implay;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        implay=findViewById(R.id.play);
+        implay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (implay.getTag()!=null && implay.getTag().toString().contains("Not_playing")) {
+
+                    if (mediaPlayer!=null) mediaPlayer.release(); //best use for audio
+                    mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.hitlar);
+                    mediaPlayer.start();
+                    implay.setImageResource(R.drawable.pause);
+                    implay.setTag("Playing");
+
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            implay.setImageResource(R.drawable.play);
+                            implay.setTag("Not_playing");
+                        }
+                    });
+                }else {
+                    if (mediaPlayer!=null)mediaPlayer.release();
+                    implay.setImageResource(R.drawable.play);
+                    implay.setTag("Not_playing");
+                }
+
+
+            }
+        });
+
+
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+}
