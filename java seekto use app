@@ -1,0 +1,81 @@
+//app এ এখন music pause করলে যেখানে pause করছি ঐখনেই আবার চালু হবে 
+
+
+package com.timeforschool.applicationmyself;
+
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.timeforschool.applicationmyself.R;
+
+public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
+    ImageView implay;
+    int pausePosition = 0; // Pause অবস্থান সংরক্ষণ
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        implay = findViewById(R.id.play);
+        implay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (implay.getTag() != null && implay.getTag().toString().contains("Not_playing")) {
+
+                    if (mediaPlayer == null) {
+                        mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.hitlar);
+                    }
+
+                    mediaPlayer.seekTo(pausePosition); // Pause অবস্থান থেকে শুরু
+                    mediaPlayer.start();
+                    implay.setImageResource(R.drawable.pause);
+                    implay.setTag("Playing");
+
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            implay.setImageResource(R.drawable.play);
+                            implay.setTag("Not_playing");
+                            pausePosition = 0; // গান শেষ হলে শুরুতে নিয়ে আসা
+                        }
+                    });
+
+                } else {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        pausePosition = mediaPlayer.getCurrentPosition(); // Pause অবস্থান সংরক্ষণ
+                        mediaPlayer.pause();
+                        implay.setImageResource(R.drawable.play);
+                        implay.setTag("Not_playing");
+                    }
+                }
+            }
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+}
