@@ -1,4 +1,4 @@
-//app এ এখন music pause করলে যেখানে pause করছি ঐখনেই আবার চালু হবে 
+//app এ এখন music pause করলে যেখানে pause করছি ঐখনেই আবার চালু হবে seekto এর কাজ
 
 
 package com.timeforschool.applicationmyself;
